@@ -1,0 +1,159 @@
+-# Licensed to the Apache Software Foundation (ASF) under one or more
+-# contributor license agreements.  See the NOTICE file distributed with
+-# this work for additional information regarding copyright ownership.
+-# The ASF licenses this file to You under the Apache License, Version 2.0
+-# (the "License"); you may not use this file except in compliance with
+-# the License.  You may obtain a copy of the License at
+-# 
+-# http://www.apache.org/licenses/LICENSE-2.0
+-# 
+-# Unless required by applicable law or agreed to in writing, software
+-# distributed under the License is distributed on an "AS IS" BASIS,
+-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-# See the License for the specific language governing permissions and
+-# limitations under the License.
+
+- import it._
+- import org.apache.activemq.apollo.dto._
+- val helper = new org.apache.activemq.apollo.web.resources.ViewHelper
+- import helper._
+- def percent(n:Long, d:Long) =
+  - if( d==0 )
+    - "0.00 %"
+  - else
+    - "%,.2f %%".format(n.toFloat*100.0/d)
+
+- var vhost_path = ".."
+- binding match
+  - case x:QueueDestinationDTO =>
+    .breadcumbs
+      a(href={strip_resolve(vhost_path)+".html"}) Back
+
+    h1 Queue #{id}
+    p state: #{state} #{ uptime(state_since) } ago
+    - if( state == "STARTED" )
+      form(method="post" action={path("action/delete")})
+        input(type="submit" value="delete")
+  - case x:DurableSubscriptionDestinationDTO =>
+    .breadcumbs
+      a(href={strip_resolve(vhost_path)+".html"}) Back
+
+    h1 Durable Subscription on #{id}
+    - if( x.selector != null )
+      p selector: #{x.selector}
+    p state: #{state} #{ uptime(state_since) } ago
+    - if( state == "STARTED" )
+      form(method="post" action={path("action/delete")})
+        input(type="submit" value="delete")
+
+  - case x:TopicDestinationDTO =>
+    - vhost_path = "../../topics/"+x.name
+    .breadcumbs
+      a(href={strip_resolve(vhost_path)+".html"}) Back
+    h1 Temporary Queue
+    p state: #{state} #{ uptime(state_since) } ago
+
+h2 Current Size
+
+p queue size: #{metrics.queue_items} messages #{memory(metrics.queue_size)}
+p memory used: #{percent(metrics.swapped_in_size, metrics.swapped_in_size_max)} (#{memory(metrics.swapped_in_size)}/#{memory(metrics.swapped_in_size_max)})
+
+h3 Enqueue/Deqeueue Counters
+
+p enqueued: #{metrics.enqueue_item_counter} messages (#{memory(metrics.enqueue_size_counter)}), #{uptime(metrics.enqueue_ts)} ago
+
+p dequeued: #{metrics.dequeue_item_counter} messages (#{memory(metrics.dequeue_size_counter)}), #{uptime(metrics.dequeue_ts)} ago
+
+p nacked: #{metrics.nack_item_counter} messages (#{memory(metrics.nack_size_counter)}), #{uptime(metrics.nack_ts)} ago
+
+p expired: #{metrics.expired_item_counter} messages (#{memory(metrics.expired_size_counter)}), #{uptime(metrics.expired_ts)} ago
+
+p
+  | enqueue rate throttle:
+  - if (max_enqueue_rate==null)
+    | none
+  - else
+    | #{max_enqueue_rate} messages/sec
+
+h2 Swap Metrics
+
+p swapped in: #{metrics.swapped_in_items} messages #{memory(metrics.swapped_in_size)}
+- val swapped_out_items = metrics.queue_items - metrics.swapped_in_items
+- val swapped_out_size = metrics.queue_size - metrics.swapped_in_size
+p swapped out: #{swapped_out_items} messages #{memory(swapped_out_size)}
+p percent swapped out: #{percent(swapped_out_items, metrics.queue_items)} of the messages
+
+p swapping out: #{memory(metrics.swapping_out_size)}
+p swapping in: #{memory(metrics.swapping_in_size)}
+
+p total swap outs : #{metrics.swap_out_item_counter} messages (#{memory(metrics.swap_out_size_counter)})
+p total swap ins : #{metrics.swap_in_item_counter} messages (#{memory(metrics.swap_in_size_counter)})
+
+h2 Producers
+p producers: #{metrics.producer_count}
+p total producers ever : #{metrics.producer_counter}
+p
+  - if ( producers == null )
+    a(href={ id+".html?producers=true" }) (Show Producers)
+  - else
+    a(href={ id+".html" }) (Hide Producers)
+    ul
+      - for( x <- producers )
+        li.producer
+          - x.kind match
+            - case "queue" =>
+              a(href={ path(vhost_path+"/../queues/"+x.id+".html") }) #{x.label}
+            - case "connection" =>
+              a(href={ path(vhost_path+"/../../../connections/"+x.id+".html") }) #{x.label}
+            - case _ =>
+          p dispatched: #{x.enqueue_item_counter} messages (#{memory(x.enqueue_size_counter)}), #{uptime(x.enqueue_ts)} ago
+
+
+h2 Consumers
+p consumers: #{metrics.consumer_count}
+p total consumers ever : #{metrics.consumer_counter}
+p
+  - if ( consumers == null )
+    a(href={ id+".html?consumers=true" }) (Show Consumers)
+  - else
+    a(href={ id+".html" }) (Hide Consumers)
+    ul
+      - for( x <- consumers )
+        li.consumer
+          - x.kind match
+            - case "queue" =>
+              a(href={ path(vhost_path+"/../queues/"+x.id+".html") }) #{x.label}
+            - case "connection" =>
+              a(href={ path(vhost_path+"/../../../connections/"+x.id+".html") }) #{x.label}
+            - case _ =>
+          p dispatched: #{x.enqueue_item_counter} messages (#{memory(x.enqueue_size_counter)}), #{uptime(x.enqueue_ts)} ago
+          p next message seq: #{x.position}
+          p acquired: #{x.acquired_count} messages (#{memory(x.acquired_size)})
+          p acks: #{x.total_ack_count} messages
+          p naks: #{x.total_nack_count} messages
+          p waiting on: #{x.waiting_on}
+          p acks per second: #{x.ack_item_rate}
+          p bytes acked per second: #{x.ack_size_rate}
+
+- if ( entries == null )
+  h2
+    | Entries Dump
+    a(href={ id+".html?entries=true" }) (Show)
+- else
+  h2
+    | Entries Dump
+    a(href={ id+".html" })  (Hide)
+  table.queue-entries
+    tr
+      th State
+      th Size
+      th consumers, prefetched
+      th position:count
+
+    - for( x <- entries )
+      tr
+        td #{x.state}
+        td #{memory(x.size)}
+        td #{x.consumer_count}, #{x.is_prefetched}
+        td #{x.seq}:#{x.count}
+

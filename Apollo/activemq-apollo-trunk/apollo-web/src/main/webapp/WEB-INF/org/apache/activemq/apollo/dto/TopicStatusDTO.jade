@@ -1,0 +1,82 @@
+-# Licensed to the Apache Software Foundation (ASF) under one or more
+-# contributor license agreements.  See the NOTICE file distributed with
+-# this work for additional information regarding copyright ownership.
+-# The ASF licenses this file to You under the Apache License, Version 2.0
+-# (the "License"); you may not use this file except in compliance with
+-# the License.  You may obtain a copy of the License at
+-# 
+-# http://www.apache.org/licenses/LICENSE-2.0
+-# 
+-# Unless required by applicable law or agreed to in writing, software
+-# distributed under the License is distributed on an "AS IS" BASIS,
+-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-# See the License for the specific language governing permissions and
+-# limitations under the License.
+
+- import it._
+- val helper = new org.apache.activemq.apollo.web.resources.ViewHelper
+- import helper._
+
+.breadcumbs
+  a(href={strip_resolve("..")+".html"}) Back
+
+h1 Topic: #{id}
+
+p state: #{state} #{ uptime(state_since) } ago
+- if( state == "STARTED" )
+  form(method="post" action={path("action/delete")})
+    input(type="submit" value="delete")
+
+h3 Topic Domain
+
+h4 Enqueue/Deqeueue Counters
+
+p enqueued: #{metrics.enqueue_item_counter} messages (#{memory(metrics.enqueue_size_counter)}), #{uptime(metrics.enqueue_ts)} ago
+
+p dequeued: #{metrics.dequeue_item_counter} messages (#{memory(metrics.dequeue_size_counter)}), #{uptime(metrics.dequeue_ts)} ago
+
+h4 Producers
+p producers: #{metrics.producer_count}
+p total producers ever : #{metrics.producer_counter}
+p
+  - if ( producers == null )
+    a(href={ id+".html?producers=true" }) (Show Producers)
+  - else
+    a(href={ id+".html" }) (Hide Producers)
+    ul
+      - for( x <- producers )
+        li.producer
+          - x.kind match
+            - case "queue" =>
+              a(href={ path("../../queues/"+x.id+".html") }) #{x.label}
+            - case "connection" =>
+              a(href={ path("../../../../connections/"+x.id+".html") }) #{x.label}
+            - case _ =>
+          p dispatched: #{x.enqueue_item_counter} messages (#{memory(x.enqueue_size_counter)}), #{uptime(x.enqueue_ts)} ago
+
+h4 Consumers
+p consumers: #{metrics.consumer_count}
+p total consumers ever : #{metrics.consumer_counter}
+p
+  - if ( consumers == null )
+    a(href={ id+".html?consumers=true" }) (Show Consumers)
+  - else
+    a(href={ id+".html" }) (Hide Consumers)
+    ul
+      - for( x <- consumers )
+        li.consumer
+          - x.kind match
+            - case "topic-queue" =>
+              a(href={ path("../../topic-queues/"+id+"/"+x.id+".html") }) #{x.label}
+            - case "queue" =>
+              a(href={ path("../../queues/"+x.id+".html") }) #{x.label}
+            - case "connection" =>
+              a(href={ path("../../../../connections/"+x.id+".html") }) #{x.label}
+            - case _ =>
+          p dispatched: #{x.enqueue_item_counter} messages (#{memory(x.enqueue_size_counter)}), #{uptime(x.enqueue_ts)} ago
+
+h4 Durable Subscribers
+ul
+  - for( x <- dsubs )
+    li
+      a(href={ path("../../dsubs/"+x+".html") }) #{x}

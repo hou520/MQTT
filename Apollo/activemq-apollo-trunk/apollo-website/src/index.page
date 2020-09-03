@@ -1,0 +1,69 @@
+---
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+title: Apollo
+--- name:overview pipeline:jade
+
+h1 Apollo #{project_version}
+
+| #{project_slogan}
+
+--- name:content pipeline:markdown 
+
+## THIS PROJECT IS NOW DEPRECATED
+
+This project has died, and is now Deprecated, we strongly recommend you to use ActiveMQ 5.x or ActiveMQ Artemis.
+
+
+
+[ActiveMQ Apollo](http://activemq.apache.org/apollo/) is a faster, more
+reliable, easier to maintain messaging broker built from the foundations of
+the original [ActiveMQ](http://activemq.apache.org). It accomplishes this
+using a radically different threading and message dispatching 
+[architecture](documentation/architecture.html).  Like ActiveMQ, Apollo is a 
+multi-protocol broker and supports STOMP, AMQP, MQTT, Openwire, SSL, and WebSockets.
+
+## Features
+
+* STOMP Protocol Support
+* AMQP Protocol Support
+* MQTT Protocol Support
+* OpenWire Protocol Support
+* [Topics and Queues](documentation/stomp-manual.html#Destination_Types)
+* [Queue Browsers](documentation/stomp-manual.html#Browsing_Subscriptions)
+* [Durable Subscriptions on Topics](documentation/stomp-manual.html#Topic_Durable_Subscriptions)
+* [Mirrored Queues](documentation/user-manual.html#Mirrored_Queues)
+* [Reliable Messaging](documentation/stomp-manual.html#Reliable_Messaging)
+* [Message Expiration](documentation/stomp-manual.html#Message_Expiration)
+* [Message Swapping](documentation/architecture.html#Message_Swapping)
+* [Message Selectors](documentation/stomp-manual.html#Message_Selectors)
+* [Message Groups](documentation/stomp-manual.html#Message_Groups)
+* [JAAS Authentication](documentation/user-manual.html#Authentication)
+* [ACL based Authorization](documentation/user-manual.html#Authorization)
+* [SSL/TLS Support](documentation/user-manual.html#Using_SSL_TLS) and Certificate based Authentication
+* [REST Management API](documentation/management-api.html)
+
+
+## Documentation
+
+* [Getting Started Guide](documentation/getting-started.html)
+* [User Manual](documentation/user-manual.html)
+* [Migration Guide](documentation/migration-guide.html)
+* [STOMP Protocol Manual](documentation/stomp-manual.html) 
+* [OpenWire Protocol Manual](documentation/openwire-manual.html)
+* [AMQP Protocol Manual](documentation/amqp-manual.html) 
+* [MQTT Protocol Manual](documentation/mqtt-manual.html)
+
+
