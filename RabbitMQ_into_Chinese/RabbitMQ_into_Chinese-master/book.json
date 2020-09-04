@@ -1,0 +1,30 @@
+{
+    "gitbook": "=3.0.0-pre.14",
+    "author": "Ping <yuanta11@gmil.com>",
+    "description": "RabbitMQ in Chinese",
+    "root": "./published",
+    "generator": "site",
+    "links": {
+        "sharing": {
+            "all": null,
+            "facebook": null,
+            "google": null,
+            "twitter": null,
+            "weibo": null
+        },
+        "sidebar": {
+            "瓶先生": "http://mr-ping.com"
+        }
+    },
+    "plugins": [
+        "ga",
+        "expandable-chapters-interactive",
+        "-lunr", "-search", "search-plus"],
+    "pluginsConfig": {
+        "ga": {
+            "token": "UA-120619814-1"
+        }
+    },
+    "title": "RabbitMQ in Chinese",
+    "variables": {}
+}
